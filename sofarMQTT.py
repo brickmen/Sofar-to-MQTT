@@ -7,6 +7,7 @@ import paho.mqtt.client as mqtt
 import signal
 import sys
 import gc
+from time import sleep
 # This program is different from the original as it runs continually and reports data to the HA MQTT server instead of being evoked by HA directly
 
 MQTTServer = "127.0.0.1"
