@@ -157,6 +157,7 @@ def readData():
 
 	success = True
 
+def valuesToStrings():
 	Grid_PwrStr = str(Grid_IO_Pwr)
 	House_Consumption_PwrStr = str(House_Consumption_Pwr)
 	Internal_IO_PwrStr = str(Internal_IO_Pwr)
@@ -173,6 +174,8 @@ def readData():
 	InverterInternalTempStr = str(InverterInternalTemp)
 	InverterHeatsinkTempStr = str(InverterHeatsinkTemp)
 	Inverter_FreqStr = str(float("{:.1f}".format(Inverter_Freq)))
+
+def printStrings():
 		##Debug Print
 	print("Grid Power " + Grid_PwrStr + "W")
 	print("House Consumption " + House_Consumption_PwrStr + "W")
@@ -191,20 +194,12 @@ def readData():
 	print("Inverter Internal Temp " + InverterInternalTempStr + "C")
 	print("Inverter Heatsink Temp " + InverterHeatsinkTempStr + "C")
 	print("Grid Frequency " + Inverter_FreqStr + "Hz")
-	try:
-		
-		#print("Read ID:" + str(id)+ " Watts " +str(watts) + " State " + str(state))
-		mqttcounts = mqttcounts +1
-		print("Publish to MQTT "+ str(mqttcounts))
-		#Build the MQTT Names
-		topic = "sensors/sofar/" +  "grid_power"
-		client.publish(topic,Grid_PwrStr,qos=0,retain=False)
-		topic = "sensors/sofar/" +  "house_consumption"
-		client.publish(topic,House_Consumption_PwrStr,qos=0,retain=False)
-	except:
-		print("\n Error Occured in MQTT Publish")
-	
-	gc.collect()
+
+def mqttPublish():
+	topic = "sensors/sofar/" +  "grid_power"
+	client.publish(topic,Grid_PwrStr,qos=0,retain=False)
+	topic = "sensors/sofar/" +  "house_consumption"
+	client.publish(topic,House_Consumption_PwrStr,qos=0,retain=False)
 
 
 serErrorCount = 0
@@ -223,6 +218,20 @@ while serErrorCount != 11:
 		#repairTRX()
 		#print("TRX Repaired")
 	#print(str(jsondata))
+
+	try:
+		
+		#print("Read ID:" + str(id)+ " Watts " +str(watts) + " State " + str(state))
+		mqttcounts = mqttcounts +1
+		print("Publish to MQTT "+ str(mqttcounts))
+		valuesToStrings()
+		printStrings()
+		mqttPublish()
+		
+	except:
+		print("\n Error Occured in MQTT Publish")
+	
+	gc.collect()
 	
 	
 	if serErrorCount == 10:
