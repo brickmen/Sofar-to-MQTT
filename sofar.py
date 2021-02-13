@@ -7,22 +7,13 @@ import time
 ###		PROGRAM FLOW:
 ###			- Collect Data from Sofar HYD6000-ES inverter
 ###			- Convert to individual bytes
-###			- Construct 2 messages 
-###				- KWH Totals only sent when inverter is running, so they are not reset to zero
-###				- All other 'live' data set to zero when inverter shuts down
-###			- Send Packets to EMONHUB
-###	
-###		EmonHub Node IDs:
-###			- NodeID 3: All time energy KWH	/ Today KWH (not sent overnight)
-###			- NodeID 4: Live Data Readings - Zeros sent overnight 
+###			- Print Values to screen
+
 
 
 ### COLLECT DATA FROM SOFAR HYD6000 INVERTER ###
 
-# Base url
-#ubase = 'http://emonpi/input/post?node=emontx&fulljson={' # URL of your emon device
-#emon_apikey = "e5fe98dec735e5fa17139805d902517e" # add your key here for RW access
-
+### SET /dev/ttyUSB* to your device, check it with "dmesg | grep tty"
 instrument = minimalmodbus.Instrument('/dev/ttyUSB2', 1) # port name, slave address 
 
 instrument.serial.baudrate = 9600   # Baud
