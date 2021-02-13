@@ -14,36 +14,47 @@ MQTTServer = "127.0.0.1"
 MQTTPort = 1883
 
 class SofarInverter:
-	Inverter_Freq = 0
-	Battery_ChargeDischargePwr = 0
-	Battery_Cycles = 0
-	Battery_ChrgLevel = 0
-	Battery_Temp = 0
-	Grid_IO_Pwr = 0
-	House_Consumption_Pwr = 0
-	Internal_IO_Pwr = 0
-	PV_Generation_Pwr = 0
-	EPS_Output_V = 0
-	EPS_Output_Pwr = 0
-	TodayGeneratedSolar_Wh = 0
-	TodaySoldSolar_Wh = 0
-	TodayBoughtGrid_Wh = 0
-	TodayConsumption_Wh = 0
-	TotalLoadConsumptionH = 0
-	TotalLoadConsumption = 0
-	InverterInternalTemp = 0
-	InverterHeatsinkTemp = 0
-
-class Instrument:
 	def __init__(self):
-		### SET /dev/ttyUSB* to your device, check it with "dmesg | grep tty"
-		instrument = minimalmodbus.Instrument('/dev/ttyUSB2', 1) # port name, slave address 
+		self.Inverter_Freq = 0
+		self.Battery_ChargeDischargePwr = 0
+		self.Battery_Cycles = 0
+		self.Battery_ChrgLevel = 0
+		self.Battery_Temp = 0
+		self.Grid_IO_Pwr = 0
+		self.House_Consumption_Pwr = 0
+		self.Internal_IO_Pwr = 0
+		self.PV_Generation_Pwr = 0
+		self.EPS_Output_V = 0
+		self.EPS_Output_Pwr = 0
+		self.TodayGeneratedSolar_Wh = 0
+		self.TodaySoldSolar_Wh = 0
+		self.TodayBoughtGrid_Wh = 0
+		self.TodayConsumption_Wh = 0
+		self.TotalLoadConsumptionH = 0
+		self.TotalLoadConsumption = 0
+		self.InverterInternalTemp = 0
+		self.InverterHeatsinkTemp = 0
 
-		instrument.serial.baudrate = 9600   # Baud
-		instrument.serial.bytesize = 8
-		instrument.serial.parity   = serial.PARITY_NONE
-		instrument.serial.stopbits = 1
-		instrument.serial.timeout  = 0.5   # seconds
+	def setStrings(self):
+		self.Grid_PwrStr = str(self.Grid_IO_Pwr)
+		self.House_Consumption_PwrStr = str(self.House_Consumption_Pwr)
+		self.Internal_IO_PwrStr = str(self.Internal_IO_Pwr)
+		self.PV_Generation_PwrStr = str(self.PV_Generation_Pwr)
+		self.EPS_Output_VStr = str(self.EPS_Output_V)
+		self.EPS_Output_PwrStr = str(self.EPS_Output_Pwr)
+		self.TodayGenerated_WhStr = str(self.TodayGeneratedSolar_Wh)
+		self.TodaySold_WhStr = str(self.TodaySoldSolar_Wh)
+		self.TodayBought_WhStr = str(self.TodayBoughtGrid_Wh)
+		self.TodayConsumption_WhStr = str(self.TodayConsumption_Wh)
+		self.Battery_ChargeDischargePwrStr = str(self.Battery_ChargeDischargePwr)
+		self.Battery_CyclesStr = str(self.Battery_Cycles)
+		self.Battery_ChrgLevelStr = str(self.Battery_ChrgLevel)
+		self.InverterInternalTempStr = str(self.InverterInternalTemp)
+		self.InverterHeatsinkTempStr = str(self.InverterHeatsinkTemp)
+		self.TotalLoadConsumptionStr = str(self.TotalLoadConsumption)
+		self.Inverter_FreqStr = str(float("{:.1f}".format(self.Inverter_Freq)))
+
+
 
 def on_connect(client, userdata, flags, rc):
 	print("Connected with result code "+str(rc))
@@ -90,87 +101,87 @@ def readAllData(instrument, pvdevice):
 	pvdevice.TodayBoughtGrid_Wh = instrument.read_register(0x21a, 0, functioncode=3, signed=False) * 10.0 # read Today's Power bought Wh
 	pvdevice.TodayConsumption_Wh = instrument.read_register(0x21b, 0, functioncode=3, signed=False) * 10.0 # read Today's consumption bought Wh
 	pvdevice.TotalLoadConsumptionH = instrument.read_register(0x222, 0, functioncode=3, signed=False) * 0xffff # Total Load Consumption kWh HighByte
-	pvdevice.TotalLoadConsumption = TotalLoadConsumptionH + instrument.read_register(0x223, 0, functioncode=3, signed=False) # Total Load Consumption kWh LowByte
+	pvdevice.TotalLoadConsumption = pvdevice.TotalLoadConsumptionH + instrument.read_register(0x223, 0, functioncode=3, signed=False) # Total Load Consumption kWh LowByte
 	pvdevice.InverterInternalTemp = instrument.read_register(0x238, 0, functioncode=3, signed=False) # Inverter Internal Temperature
 	pvdevice.InverterHeatsinkTemp = instrument.read_register(0x239, 0, functioncode=3, signed=False) # Inverter Heatsink Temperature
 	success = True
 
-def valuesToStrings(pvdevice):
-	Grid_PwrStr = str(pvdevice.Grid_IO_Pwr)
-	House_Consumption_PwrStr = str(pvdevice.House_Consumption_Pwr)
-	Internal_IO_PwrStr = str(pvdevice.Internal_IO_Pwr)
-	PV_Generation_PwrStr = str(pvdevice.PV_Generation_Pwr)
-	EPS_Output_VStr = str(pvdevice.EPS_Output_V)
-	EPS_Output_PwrStr = str(pvdevice.EPS_Output_Pwr)
-	TodayGenerated_WhStr = str(pvdevice.TodayGeneratedSolar_Wh)
-	TodaySold_WhStr = str(pvdevice.TodaySoldSolar_Wh)
-	TodayBought_WhStr = str(pvdevice.TodayBoughtGrid_Wh)
-	TodayConsumption_WhStr = str(pvdevice.TodayConsumption_Wh)
-	Battery_ChargeDischargePwrStr = str(pvdevice.Battery_ChargeDischargePwr)
-	Battery_CyclesStr = str(pvdevice.Battery_Cycles)
-	Battery_ChrgLevelStr = str(pvdevice.Battery_ChrgLevel)
-	InverterInternalTempStr = str(pvdevice.InverterInternalTemp)
-	InverterHeatsinkTempStr = str(pvdevice.InverterHeatsinkTemp)
-	TotalLoadConsumptionStr = str(pvdevice.TotalLoadConsumption)
-	Inverter_FreqStr = str(float("{:.1f}".format(pvdevice.Inverter_Freq)))
 
-def printStrings(valuesToStrings):
+def printStrings(pvdevice):
 		##Debug Print
-	print("Grid Power " + valuesToStrings.Grid_PwrStr + "W")
-	print("House Consumption " + valuesToStrings.House_Consumption_PwrStr + "W")
-	print("Solar PV Generation " + valuesToStrings.PV_Generation_PwrStr + "W")
-	print("Internal I/O Power " + valuesToStrings.Internal_IO_PwrStr + "W")
-	print("EPS Output Volts " + valuesToStrings.EPS_Output_VStr + "V")
-	print("EPS Output Power " + valuesToStrings.EPS_Output_PwrStr + "W")
-	print("Today's Generation " + valuesToStrings.TodayGenerated_WhStr + "Wh")
-	print("Today's Sold " + valuesToStrings.TodaySold_WhStr + "Wh")
-	print("Today's Bought " + valuesToStrings.TodayBought_WhStr + "Wh")
-	print("Today's Consumption " + valuesToStrings.TodayConsumption_WhStr + "Wh")
-	print("All time Consumption " + valuesToStrings.TotalLoadConsumptionStr + "kW")
-	print("Battery Charge/Discharge Power " + valuesToStrings.Battery_ChargeDischargePwrStr + "W")
-	print("Battery Cycles " + valuesToStrings.Battery_CyclesStr)
-	print("Battery Charge Level " + valuesToStrings.Battery_ChrgLevelStr + "%")
-	print("Inverter Internal Temp " + valuesToStrings.InverterInternalTempStr + "C")
-	print("Inverter Heatsink Temp " + valuesToStrings.InverterHeatsinkTempStr + "C")
-	print("Grid Frequency " + valuesToStrings.Inverter_FreqStr + "Hz")
+	print("Grid Power " + pvdevice.Grid_PwrStr + "W")
+	print("House Consumption " + pvdevice.House_Consumption_PwrStr + "W")
+	print("Solar PV Generation " + pvdevice.PV_Generation_PwrStr + "W")
+	print("Internal I/O Power " + pvdevice.Internal_IO_PwrStr + "W")
+	print("EPS Output Volts " + pvdevice.EPS_Output_VStr + "V")
+	print("EPS Output Power " + pvdevice.EPS_Output_PwrStr + "W")
+	print("Today's Generation " + pvdevice.TodayGenerated_WhStr + "Wh")
+	print("Today's Sold " + pvdevice.TodaySold_WhStr + "Wh")
+	print("Today's Bought " + pvdevice.TodayBought_WhStr + "Wh")
+	print("Today's Consumption " + pvdevice.TodayConsumption_WhStr + "Wh")
+	print("All time Consumption " + pvdevice.TotalLoadConsumptionStr + "kW")
+	print("Battery Charge/Discharge Power " + pvdevice.Battery_ChargeDischargePwrStr + "W")
+	print("Battery Cycles " + pvdevice.Battery_CyclesStr)
+	print("Battery Charge Level " + pvdevice.Battery_ChrgLevelStr + "%")
+	print("Inverter Internal Temp " + pvdevice.InverterInternalTempStr + "C")
+	print("Inverter Heatsink Temp " + pvdevice.InverterHeatsinkTempStr + "C")
+	print("Grid Frequency " + pvdevice.Inverter_FreqStr + "Hz")
 
-def mqttPublish(valuesToStrings):
+def mqttPublish(pvdevice):
 	topic = "sensors/sofar/" +  "grid_power"
-	client.publish(topic,valuesToStrings.Grid_PwrStr,qos=0,retain=False)
+	client.publish(topic,pvdevice.Grid_PwrStr,qos=0,retain=False)
 	topic = "sensors/sofar/" +  "house_consumption"
-	client.publish(topic,valuesToStrings.House_Consumption_PwrStr,qos=0,retain=False)
-
+	client.publish(topic,pvdevice.House_Consumption_PwrStr,qos=0,retain=False)
+	topic = "sensors/sofar/" +  "pv_generation"
+	client.publish(topic,pvdevice.PV_Generation_PwrStr,qos=0,retain=False)
+	topic = "sensors/sofar/" +  "batt_power"
+	client.publish(topic,pvdevice.Battery_ChargeDischargePwrStr,qos=0,retain=False)
+	topic = "sensors/sofar/" +  "batt_soc"
+	client.publish(topic,pvdevice.Battery_ChrgLevelStr,qos=0,retain=False)
 
 mqttcounts=0
 serErrorCount = 0
-instrument = Instrument()
 inverter = SofarInverter()
+instrument = minimalmodbus.Instrument('/dev/ttyUSB2', 1) # port name, slave address 
+
+instrument.serial.baudrate = 9600   # Baud
+instrument.serial.bytesize = 8
+instrument.serial.parity   = serial.PARITY_NONE
+instrument.serial.stopbits = 1
+instrument.serial.timeout  = 0.5   # seconds
+
 
 while serErrorCount != 11:
-	
+	print("Read Data "+ str(mqttcounts))
+	readAllData(instrument, inverter)
+	mqttcounts = mqttcounts +1
+	print("Publish to MQTT "+ str(mqttcounts))
+	inverter.setStrings()
+	printStrings(inverter)
+	mqttPublish(inverter)
 
-	try:
-		readAllData(instrument, inverter)
-	except:
-		print("Unable to read Data From Inverter.")
-		#ser.close()
-		#ser = serial.Serial(SerialDevice, SerialBaud, timeout=20)
-		#print("ser closed and reopened")
-		#repairTRX()
-		#print("TRX Repaired")
-	#print(str(jsondata))
+	# try:
+	# 	readAllData(instrument, inverter)
+	# except:
+	# 	print("Unable to read Data From Inverter.")
+	# 	#ser.close()
+	# 	#ser = serial.Serial(SerialDevice, SerialBaud, timeout=20)
+	# 	#print("ser closed and reopened")
+	# 	#repairTRX()
+	# 	#print("TRX Repaired")
+	# #print(str(jsondata))
 
-	try:
+	# try:
 		
-		#print("Read ID:" + str(id)+ " Watts " +str(watts) + " State " + str(state))
-		mqttcounts = mqttcounts +1
-		print("Publish to MQTT "+ str(mqttcounts))
-		valuesToStrings(pvdevice)
-		printStrings(valuesToStrings)
-		mqttPublish(valuesToStrings)
+	# 	#print("Read ID:" + str(id)+ " Watts " +str(watts) + " State " + str(state))
+	# 	mqttcounts = mqttcounts +1
+	# 	print("Publish to MQTT "+ str(mqttcounts))
+	# 	pvdevice(pvdevice)
+	# 	printStrings(pvdevice)
+	# 	mqttPublish(pvdevice)
 		
-	except:
-		print("\n Error Occured in MQTT Publish")
+	# except:
+	# 	print("\n Error Occured in MQTT Publish")
 	
 	gc.collect()
 	
