@@ -13,18 +13,6 @@ from time import sleep
 MQTTServer = "127.0.0.1"
 MQTTPort = 1883
 
-### SET /dev/ttyUSB* to your device, check it with "dmesg | grep tty"
-instrument = minimalmodbus.Instrument('/dev/ttyUSB2', 1) # port name, slave address 
-
-instrument.serial.baudrate = 9600   # Baud
-instrument.serial.bytesize = 8
-instrument.serial.parity   = serial.PARITY_NONE
-instrument.serial.stopbits = 1
-instrument.serial.timeout  = 0.5   # seconds
-
-
-mqttcounts=0
-
 def on_connect(client, userdata, flags, rc):
 	print("Connected with result code "+str(rc))
 # Subscribe to all reqstate messages
@@ -35,8 +23,6 @@ def on_message(client, userdata, msg):
 	print("\n MQTT Command of Topic: "+msg.topic+ " recieved with payload: "+str(msg.payload))
 	sleep(1)
 	
-
-
 # Create MQTT Client
 client = mqtt.Client()
 # Link Callbacks with the above functions
@@ -46,8 +32,6 @@ client.username_pw_set("sofar","sofar")
 client.connect(MQTTServer,MQTTPort,30)
 client.loop_start()
 
-
-
 def signal_handler(signal,frame):
 	print("Cleaning Up then Shutting Down")
 	client.loop_stop()
@@ -56,7 +40,7 @@ def signal_handler(signal,frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
-def readAllData(instrument):
+def readAllData(instrument instrument):
 	success = False # Intialise Success/Failure Flag to ensure full data is only uploaded if all data is received.
 	Inverter_Freq = instrument.read_register(0x20c, 0, functioncode=3, signed=False) / 100.0 # read inverter frequency
 	Battery_ChargeDischargePwr = instrument.read_register(0x20d, 0, functioncode=3, signed=True) * 10.0 # read battery charge discharge pwr
@@ -124,7 +108,15 @@ def mqttPublish():
 	topic = "sensors/sofar/" +  "house_consumption"
 	client.publish(topic,valuesToStrings.House_Consumption_PwrStr,qos=0,retain=False)
 
+### SET /dev/ttyUSB* to your device, check it with "dmesg | grep tty"
+instrument = minimalmodbus.Instrument('/dev/ttyUSB2', 1) # port name, slave address 
 
+instrument.serial.baudrate = 9600   # Baud
+instrument.serial.bytesize = 8
+instrument.serial.parity   = serial.PARITY_NONE
+instrument.serial.stopbits = 1
+instrument.serial.timeout  = 0.5   # seconds
+mqttcounts=0
 serErrorCount = 0
 
 
@@ -132,7 +124,7 @@ while serErrorCount != 11:
 	
 
 	try:
-		readData(instrument)
+		readAllData(instrument)
 	except:
 		print("Unable to read Data From Inverter.")
 		#ser.close()
