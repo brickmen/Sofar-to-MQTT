@@ -115,7 +115,7 @@ def readData():
 serErrorCount = 0
 
 
-while true:
+while serErrorCount != 11:
 	
 
 	try:
