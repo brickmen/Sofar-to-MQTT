@@ -56,7 +56,22 @@ InverterHeatsinkTemp = instrument.read_register(0x239, 0, functioncode=3, signed
 
 	##Flag to stream all data to EmonHub
 success = True
-
+Grid_PwrStr = str(Grid_IO_Pwr)
+House_Consumption_PwrStr = str(House_Consumption_Pwr)
+Internal_IO_PwrStr = str(Internal_IO_Pwr)
+PV_Generation_PwrStr = str(PV_Generation_Pwr)
+EPS_Output_VStr = str(EPS_Output_V)
+EPS_Output_PwrStr = str(EPS_Output_Pwr)
+TodayGenerated_WhStr = str(TodayGeneratedSolar_Wh)
+TodaySold_WhStr = str(TodaySoldSolar_Wh)
+TodayBought_WhStr = str(TodayBoughtGrid_Wh)
+TodayConsumption_WhStr = str(TodayConsumption_Wh)
+Battery_ChargeDischargePwrStr = str(Battery_ChargeDischargePwr)
+Battery_CyclesStr = str(Battery_Cycles)
+Battery_ChrgLevelStr = str(Battery_ChrgLevel)
+InverterInternalTempStr = str(InverterInternalTemp)
+InverterHeatsinkTempStr = str(InverterHeatsinkTemp)
+Inverter_FreqStr = str(float("{:.1f}".format(Inverter_Freq)))
 ##Debug Print
 print("Grid Power " + Grid_PwrStr + "W")
 print("House Consumption " + House_Consumption_PwrStr + "W")
@@ -145,7 +160,23 @@ def readData():
 		##Flag to stream all data to EmonHub
 	success = True
 
-	##Debug Print
+	Grid_PwrStr = str(Grid_IO_Pwr)
+	House_Consumption_PwrStr = str(House_Consumption_Pwr)
+	Internal_IO_PwrStr = str(Internal_IO_Pwr)
+	PV_Generation_PwrStr = str(PV_Generation_Pwr)
+	EPS_Output_VStr = str(EPS_Output_V)
+	EPS_Output_PwrStr = str(EPS_Output_Pwr)
+	TodayGenerated_WhStr = str(TodayGeneratedSolar_Wh)
+	TodaySold_WhStr = str(TodaySoldSolar_Wh)
+	TodayBought_WhStr = str(TodayBoughtGrid_Wh)
+	TodayConsumption_WhStr = str(TodayConsumption_Wh)
+	Battery_ChargeDischargePwrStr = str(Battery_ChargeDischargePwr)
+	Battery_CyclesStr = str(Battery_Cycles)
+	Battery_ChrgLevelStr = str(Battery_ChrgLevel)
+	InverterInternalTempStr = str(InverterInternalTemp)
+	InverterHeatsinkTempStr = str(InverterHeatsinkTemp)
+	Inverter_FreqStr = str(float("{:.1f}".format(Inverter_Freq)))
+		##Debug Print
 	print("Grid Power " + Grid_PwrStr + "W")
 	print("House Consumption " + House_Consumption_PwrStr + "W")
 	print("Solar PV Generation " + PV_Generation_PwrStr + "W")
