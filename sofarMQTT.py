@@ -32,8 +32,9 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
 	print("\n MQTT Command of Topic: "+msg.topic+ " recieved with payload: "+str(msg.payload))
 	sleep(1)
-	if ser.is_open:
+	if instrument.is_open:
 		#TODO
+		print("instrument available")
 
 
 # Create MQTT Client
