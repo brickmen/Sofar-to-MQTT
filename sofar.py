@@ -20,10 +20,10 @@ import time
 ### COLLECT DATA FROM SOFAR HYD6000 INVERTER ###
 
 # Base url
-ubase = 'http://emonpi/input/post?node=emontx&fulljson={' # URL of your emon device
-emon_apikey = "e5fe98dec735e5fa17139805d902517e" # add your key here for RW access
+#ubase = 'http://emonpi/input/post?node=emontx&fulljson={' # URL of your emon device
+#emon_apikey = "e5fe98dec735e5fa17139805d902517e" # add your key here for RW access
 
-instrument = minimalmodbus.Instrument('/dev/ttyUSB0', 1) # port name, slave address 
+instrument = minimalmodbus.Instrument('/dev/ttyUSB2', 1) # port name, slave address 
 
 instrument.serial.baudrate = 9600   # Baud
 instrument.serial.bytesize = 8
@@ -93,69 +93,23 @@ InverterInternalTempStr = str(InverterInternalTemp)
 InverterHeatsinkTempStr = str(InverterHeatsinkTemp)
 Inverter_FreqStr = str(float("{:.1f}".format(Inverter_Freq)))
 
-#    print("Grid Power " + Grid_PwrStr + "W")
-#    print("House Consumption " + House_Consumption_PwrStr + "W")
-#    print("Solar PV Generation " + PV_Generation_PwrStr + "W")
-#    print("Internal I/O Power " + Internal_IO_PwrStr + "W")
-#    print("EPS Output Volts " + EPS_Output_VStr + "V")
-#    print("EPS Output Power " + EPS_Output_PwrStr + "W")
-#    print("Today's Generation " + TodayGenerated_WhStr + "Wh")
-#    print("Today's Sold " + TodaySold_WhStr + "Wh")
-#    print("Today's Bought " + TodayBought_WhStr + "Wh")
-#    print("Today's Consumption " + TodayConsumption_WhStr + "Wh")
-    # print("All time Consumption " + str(TotalLoadConsumption) + "kW")
 
-#    print("Battery Charge/Discharge Power " + Battery_ChargeDischargePwrStr + "W")
-#    print("Battery Cycles " + Battery_CyclesStr)
-#    print("Battery Charge Level " + Battery_ChrgLevelStr + "%")
-#    print("Inverter Internal Temp " + InverterInternalTempStr + "C")
-#    print("Inverter Heatsink Temp " + InverterHeatsinkTempStr + "C")
-#   print("Grid Frequency " + Inverter_FreqStr + "Hz")
+print("Grid Power " + Grid_PwrStr + "W")
+print("House Consumption " + House_Consumption_PwrStr + "W")
+print("Solar PV Generation " + PV_Generation_PwrStr + "W")
+print("Internal I/O Power " + Internal_IO_PwrStr + "W")
+print("EPS Output Volts " + EPS_Output_VStr + "V")
+print("EPS Output Power " + EPS_Output_PwrStr + "W")
+print("Today's Generation " + TodayGenerated_WhStr + "Wh")
+print("Today's Sold " + TodaySold_WhStr + "Wh")
+print("Today's Bought " + TodayBought_WhStr + "Wh")
+print("Today's Consumption " + TodayConsumption_WhStr + "Wh")
+print("All time Consumption " + str(TotalLoadConsumption) + "kW")
+print("Battery Charge/Discharge Power " + Battery_ChargeDischargePwrStr + "W")
+print("Battery Cycles " + Battery_CyclesStr)
+print("Battery Charge Level " + Battery_ChrgLevelStr + "%")
+print("Inverter Internal Temp " + InverterInternalTempStr + "C")
+print("Inverter Heatsink Temp " + InverterHeatsinkTempStr + "C")
+print("Grid Frequency " + Inverter_FreqStr + "Hz")
 
-    ### STREAM RESULT TO EMONHUB ###
-from urlparse import urlparse
-    # from urlparse import urljoin
 
-    # Component URL parts
-str1 = "\"Grid Power\":" + Grid_PwrStr + ","
-str2 = "\"House Consumption\":" + House_Consumption_PwrStr + ","
-str3 = "\"Internal I/O Power\":" + Internal_IO_PwrStr + ","
-str4 = "\"SolarPV Generation\":" + PV_Generation_PwrStr + ","
-str5 = "\"EPS Output Volts\":" + EPS_Output_VStr + ","
-str6 = "\"EPS Output Power\":" + EPS_Output_PwrStr + ","
-str7 = "\"Today's Generation\":" + TodayGenerated_WhStr + ","
-str8 = "\"Today's Sold\":" + TodaySold_WhStr + ","
-str9 = "\"Today's Bought\":" + TodayBought_WhStr + ","
-str10 = "\"Today's Consumption\":" + TodayConsumption_WhStr + ","
-str11 = "\"Battery Charge/Discharge Power\":" + Battery_ChargeDischargePwrStr + ","
-str12 = "\"Battery Cycles\":" + Battery_CyclesStr + ","
-str13 = "\"Battery Charge Level\":" + Battery_ChrgLevelStr + ","
-str14 = "\"Inverter Internal Temp\":" + InverterInternalTempStr + ","
-str15 = "\"Inverter Heatsink Temp\":" + InverterHeatsinkTempStr + ","
-str16 = "\"Grid Frequency\":" + Inverter_FreqStr
-
-    # Add the final part of the URL plus API key
-strend = "}" + "&apikey=" + emon_apikey
-
-    # Construct the final URL
-strTot = ubase + str1 + str2 + str3 + str4 + str5 + str6 + str7 + str8 + str9 + str10 + str11 + str12 + str13 + str14 + str15 + str16 + strend
-
-udata = urlparse(strTot)
-    # print(udata.geturl())
-import requests
-    # Think about using payload = {'key1': 'value1', 'key2': ['value2', 'value3']}
-    # r = requests.get('https://httpbin.org/get', params=payload)
-requests.put(udata.geturl())
-
-    ## NOT SENT WHEN INVERTER TURNS OFF
-    # if success == True:
-    # header = "input/post?node=emontx&fulljson={"
-    # content = 
-    # s.sendall(header + content)
-    # + str(B1) + ' ' + str(B2) + ' ' + str(B3) + ' ' + str(B4) + ' ' + str(C1) + ' ' + str(C2) + '\r\n')
-
-    # s.sendall('04 ' + str(A1) + ' ' + str(A2) + ' ' + str(A3) + ' ' + str(A4) + ' ' + str(D1) + ' ' + str(D2) + ' ' + str(E1) + ' ' + str(E2) + ' # ' + str(F1) + ' ' + str(F2) + ' ' + str(G1) + ' ' + str(G2) + ' ' + str(H1) + ' ' + str(H2) + ' ' + str(I1) + ' ' + str(I2) + '\r\n')
-    # s.close()
-    ### END SEND TO EMON HUB #
-#    print("Sleeping...")
-#    time.sleep(10)
