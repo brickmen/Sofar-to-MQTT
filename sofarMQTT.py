@@ -40,7 +40,7 @@ def signal_handler(signal,frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
-def readAllData(instrument instrument):
+def readAllData(instrument):
 	success = False # Intialise Success/Failure Flag to ensure full data is only uploaded if all data is received.
 	Inverter_Freq = instrument.read_register(0x20c, 0, functioncode=3, signed=False) / 100.0 # read inverter frequency
 	Battery_ChargeDischargePwr = instrument.read_register(0x20d, 0, functioncode=3, signed=True) * 10.0 # read battery charge discharge pwr
