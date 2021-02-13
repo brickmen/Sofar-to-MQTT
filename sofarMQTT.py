@@ -194,6 +194,18 @@ def readData():
 	print("Inverter Internal Temp " + InverterInternalTempStr + "C")
 	print("Inverter Heatsink Temp " + InverterHeatsinkTempStr + "C")
 	print("Grid Frequency " + Inverter_FreqStr + "Hz")
+	try:
+		
+		#print("Read ID:" + str(id)+ " Watts " +str(watts) + " State " + str(state))
+		mqttcounts = mqttcounts +1
+		print("Publish to MQTT "+ str(mqttcounts))
+		#Build the MQTT Names
+		topic = "sensors/sofar/" +  "grid_power"
+		client.publish(topic,Grid_PwrStr,qos=0,retain=False)
+		topic = "sensors/sofar/" +  "house_consumption"
+		client.publish(topic,House_Consumption_PwrStr,qos=0,retain=False)
+	except:
+		print("\n Error Occured in MQTT Publish")
 
 
 serErrorCount = 0
@@ -212,20 +224,6 @@ while serErrorCount != 11:
 		#repairTRX()
 		#print("TRX Repaired")
 	#print(str(jsondata))
-	
-
-	try:
-		
-		#print("Read ID:" + str(id)+ " Watts " +str(watts) + " State " + str(state))
-		mqttcounts = mqttcounts +1
-		print("Publish to MQTT "+ str(mqttcounts))
-		#Build the MQTT Names
-		topic = "sensors/sofar/" +  "grid_power"
-		client.publish(topic,Grid_PwrStr,qos=0,retain=False)
-		topic = "sensors/sofar/" +  "house_consumption"
-		client.publish(topic,House_Consumption_PwrStr,qos=0,retain=False)
-	except:
-		print("\n Error Occured in MQTT Publish")
 	
 	
 	if serErrorCount == 10:
