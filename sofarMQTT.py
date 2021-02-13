@@ -155,9 +155,6 @@ def readData():
 	InverterInternalTemp = instrument.read_register(0x238, 0, functioncode=3, signed=False) # Inverter Internal Temperature
 	InverterHeatsinkTemp = instrument.read_register(0x239, 0, functioncode=3, signed=False) # Inverter Heatsink Temperature
 
-		# try:
-
-		##Flag to stream all data to EmonHub
 	success = True
 
 	Grid_PwrStr = str(Grid_IO_Pwr)
@@ -206,6 +203,8 @@ def readData():
 		client.publish(topic,House_Consumption_PwrStr,qos=0,retain=False)
 	except:
 		print("\n Error Occured in MQTT Publish")
+	
+	gc.collect()
 
 
 serErrorCount = 0
@@ -230,6 +229,6 @@ while serErrorCount != 11:
 			print("max errors reached")		
 
 	sleep(5)
-	gc.collect()
+	
 
 client.loop_stop()
