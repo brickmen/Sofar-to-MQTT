@@ -32,9 +32,7 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
 	print("\n MQTT Command of Topic: "+msg.topic+ " recieved with payload: "+str(msg.payload))
 	sleep(1)
-	if instrument.is_open:
-		#TODO
-		print("instrument available")
+	
 
 
 # Create MQTT Client
@@ -57,7 +55,7 @@ def signal_handler(signal,frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 def readData():
-	if instrument.is_open:
+	if true:
 		success = False # Intialise Success/Failure Flag to ensure full data is only uploaded if all data is received.
 
 		Inverter_Freq = instrument.read_register(0x20c, 0, functioncode=3, signed=False) / 100.0 # read inverter frequency
@@ -117,7 +115,7 @@ def readData():
 serErrorCount = 0
 
 
-while instrument.is_open:
+while true:
 	
 
 	try:
@@ -149,6 +147,7 @@ while instrument.is_open:
 	if serErrorCount == 10:
 			print("max errors reached")		
 
+	sleep(5)
 	gc.collect()
 
 client.loop_stop()
