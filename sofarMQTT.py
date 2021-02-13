@@ -21,75 +21,8 @@ instrument.serial.bytesize = 8
 instrument.serial.parity   = serial.PARITY_NONE
 instrument.serial.stopbits = 1
 instrument.serial.timeout  = 0.5   # seconds
-success = False # Intialise Success/Failure Flag to ensure full data is only uploaded if all data is received.
-# Init all rows
-Inverter_Freq = instrument.read_register(0x20c, 0, functioncode=3, signed=False) / 100.0 # read inverter frequency
 
-Battery_ChargeDischargePwr = instrument.read_register(0x20d, 0, functioncode=3, signed=True) * 10.0 # read battery charge discharge pwr
-Battery_Cycles = instrument.read_register(0x22c, 0, functioncode=3, signed=False) # read times batteries have been cycled
-Battery_ChrgLevel = instrument.read_register(0x210, 0, functioncode=3, signed=False) # read battery charge level
-Battery_Temp = instrument.read_register(0X211, 0, functioncode=3, signed=True) #Read Battery Temperature as Signed 16-Bit
 
-Grid_IO_Pwr = instrument.read_register(0x212, 0, functioncode=3, signed=True) * 10.0 # read total grid pwr
-
-House_Consumption_Pwr = instrument.read_register(0x213, 0, functioncode=3, signed=False) * 10.0 # read load pwr
-
-Internal_IO_Pwr = instrument.read_register(0x214, 0, functioncode=3, signed=True) * 10.0 # read internal system I/O pwr
-
-PV_Generation_Pwr = instrument.read_register(0x215, 0, functioncode=3, signed=False) * 10.0 # read SolarPV Generation Pwr
-
-EPS_Output_V = instrument.read_register(0x216, 0, functioncode=3, signed=False) / 10.0 # read EPS Output volts
-EPS_Output_Pwr = instrument.read_register(0x217, 0, functioncode=3, signed=False) * 10.0 # read EPS Output pwr
-
-TodayGeneratedSolar_Wh = instrument.read_register(0x218, 0, functioncode=3, signed=False) * 10.0 # read Today's generation Wh
-TodaySoldSolar_Wh = instrument.read_register(0x219, 0, functioncode=3, signed=False) * 10.0 # read Today's Generation sold Wh
-TodayBoughtGrid_Wh = instrument.read_register(0x21a, 0, functioncode=3, signed=False) * 10.0 # read Today's Power bought Wh
-TodayConsumption_Wh = instrument.read_register(0x21b, 0, functioncode=3, signed=False) * 10.0 # read Today's consumption bought Wh
-
-TotalLoadConsumptionH = instrument.read_register(0x222, 0, functioncode=3, signed=False) * 0xffff # Total Load Consumption kWh HighByte
-TotalLoadConsumption = TotalLoadConsumptionH + instrument.read_register(0x223, 0, functioncode=3, signed=False) # Total Load Consumption kWh LowByte
-
-InverterInternalTemp = instrument.read_register(0x238, 0, functioncode=3, signed=False) # Inverter Internal Temperature
-InverterHeatsinkTemp = instrument.read_register(0x239, 0, functioncode=3, signed=False) # Inverter Heatsink Temperature
-
-	# try:
-
-	##Flag to stream all data to EmonHub
-success = True
-Grid_PwrStr = str(Grid_IO_Pwr)
-House_Consumption_PwrStr = str(House_Consumption_Pwr)
-Internal_IO_PwrStr = str(Internal_IO_Pwr)
-PV_Generation_PwrStr = str(PV_Generation_Pwr)
-EPS_Output_VStr = str(EPS_Output_V)
-EPS_Output_PwrStr = str(EPS_Output_Pwr)
-TodayGenerated_WhStr = str(TodayGeneratedSolar_Wh)
-TodaySold_WhStr = str(TodaySoldSolar_Wh)
-TodayBought_WhStr = str(TodayBoughtGrid_Wh)
-TodayConsumption_WhStr = str(TodayConsumption_Wh)
-Battery_ChargeDischargePwrStr = str(Battery_ChargeDischargePwr)
-Battery_CyclesStr = str(Battery_Cycles)
-Battery_ChrgLevelStr = str(Battery_ChrgLevel)
-InverterInternalTempStr = str(InverterInternalTemp)
-InverterHeatsinkTempStr = str(InverterHeatsinkTemp)
-Inverter_FreqStr = str(float("{:.1f}".format(Inverter_Freq)))
-##Debug Print
-print("Grid Power " + Grid_PwrStr + "W")
-print("House Consumption " + House_Consumption_PwrStr + "W")
-print("Solar PV Generation " + PV_Generation_PwrStr + "W")
-print("Internal I/O Power " + Internal_IO_PwrStr + "W")
-print("EPS Output Volts " + EPS_Output_VStr + "V")
-print("EPS Output Power " + EPS_Output_PwrStr + "W")
-print("Today's Generation " + TodayGenerated_WhStr + "Wh")
-print("Today's Sold " + TodaySold_WhStr + "Wh")
-print("Today's Bought " + TodayBought_WhStr + "Wh")
-print("Today's Consumption " + TodayConsumption_WhStr + "Wh")
-print("All time Consumption " + str(TotalLoadConsumption) + "kW")
-print("Battery Charge/Discharge Power " + Battery_ChargeDischargePwrStr + "W")
-print("Battery Cycles " + Battery_CyclesStr)
-print("Battery Charge Level " + Battery_ChrgLevelStr + "%")
-print("Inverter Internal Temp " + InverterInternalTempStr + "C")
-print("Inverter Heatsink Temp " + InverterHeatsinkTempStr + "C")
-print("Grid Frequency " + Inverter_FreqStr + "Hz")
 mqttcounts=0
 
 def on_connect(client, userdata, flags, rc):
@@ -123,83 +56,73 @@ def signal_handler(signal,frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
-def readData():
+def readAllData(instrument):
 	success = False # Intialise Success/Failure Flag to ensure full data is only uploaded if all data is received.
-
-	self.Inverter_Freq = instrument.read_register(0x20c, 0, functioncode=3, signed=False) / 100.0 # read inverter frequency
-
-	self.Battery_ChargeDischargePwr = instrument.read_register(0x20d, 0, functioncode=3, signed=True) * 10.0 # read battery charge discharge pwr
-	self.Battery_Cycles = instrument.read_register(0x22c, 0, functioncode=3, signed=False) # read times batteries have been cycled
-	self.Battery_ChrgLevel = instrument.read_register(0x210, 0, functioncode=3, signed=False) # read battery charge level
-	self.Battery_Temp = instrument.read_register(0X211, 0, functioncode=3, signed=True) #Read Battery Temperature as Signed 16-Bit
-
-	self.Grid_IO_Pwr = instrument.read_register(0x212, 0, functioncode=3, signed=True) * 10.0 # read total grid pwr
-
-	self.House_Consumption_Pwr = instrument.read_register(0x213, 0, functioncode=3, signed=False) * 10.0 # read load pwr
-
-	self.Internal_IO_Pwr = instrument.read_register(0x214, 0, functioncode=3, signed=True) * 10.0 # read internal system I/O pwr
-
-	self.PV_Generation_Pwr = instrument.read_register(0x215, 0, functioncode=3, signed=False) * 10.0 # read SolarPV Generation Pwr
-
-	self.EPS_Output_V = instrument.read_register(0x216, 0, functioncode=3, signed=False) / 10.0 # read EPS Output volts
-	self.EPS_Output_Pwr = instrument.read_register(0x217, 0, functioncode=3, signed=False) * 10.0 # read EPS Output pwr
-
-	self.TodayGeneratedSolar_Wh = instrument.read_register(0x218, 0, functioncode=3, signed=False) * 10.0 # read Today's generation Wh
-	self.TodaySoldSolar_Wh = instrument.read_register(0x219, 0, functioncode=3, signed=False) * 10.0 # read Today's Generation sold Wh
-	self.TodayBoughtGrid_Wh = instrument.read_register(0x21a, 0, functioncode=3, signed=False) * 10.0 # read Today's Power bought Wh
-	self.TodayConsumption_Wh = instrument.read_register(0x21b, 0, functioncode=3, signed=False) * 10.0 # read Today's consumption bought Wh
-
-	self.TotalLoadConsumptionH = instrument.read_register(0x222, 0, functioncode=3, signed=False) * 0xffff # Total Load Consumption kWh HighByte
-	self.TotalLoadConsumption = TotalLoadConsumptionH + instrument.read_register(0x223, 0, functioncode=3, signed=False) # Total Load Consumption kWh LowByte
-
-	self.InverterInternalTemp = instrument.read_register(0x238, 0, functioncode=3, signed=False) # Inverter Internal Temperature
-	self.InverterHeatsinkTemp = instrument.read_register(0x239, 0, functioncode=3, signed=False) # Inverter Heatsink Temperature
-
+	Inverter_Freq = instrument.read_register(0x20c, 0, functioncode=3, signed=False) / 100.0 # read inverter frequency
+	Battery_ChargeDischargePwr = instrument.read_register(0x20d, 0, functioncode=3, signed=True) * 10.0 # read battery charge discharge pwr
+	Battery_Cycles = instrument.read_register(0x22c, 0, functioncode=3, signed=False) # read times batteries have been cycled
+	Battery_ChrgLevel = instrument.read_register(0x210, 0, functioncode=3, signed=False) # read battery charge level
+	Battery_Temp = instrument.read_register(0X211, 0, functioncode=3, signed=True) #Read Battery Temperature as Signed 16-Bit
+	Grid_IO_Pwr = instrument.read_register(0x212, 0, functioncode=3, signed=True) * 10.0 # read total grid pwr
+	House_Consumption_Pwr = instrument.read_register(0x213, 0, functioncode=3, signed=False) * 10.0 # read load pwr
+	Internal_IO_Pwr = instrument.read_register(0x214, 0, functioncode=3, signed=True) * 10.0 # read internal system I/O pwr
+	PV_Generation_Pwr = instrument.read_register(0x215, 0, functioncode=3, signed=False) * 10.0 # read SolarPV Generation Pwr
+	EPS_Output_V = instrument.read_register(0x216, 0, functioncode=3, signed=False) / 10.0 # read EPS Output volts
+	EPS_Output_Pwr = instrument.read_register(0x217, 0, functioncode=3, signed=False) * 10.0 # read EPS Output pwr
+	TodayGeneratedSolar_Wh = instrument.read_register(0x218, 0, functioncode=3, signed=False) * 10.0 # read Today's generation Wh
+	TodaySoldSolar_Wh = instrument.read_register(0x219, 0, functioncode=3, signed=False) * 10.0 # read Today's Generation sold Wh
+	TodayBoughtGrid_Wh = instrument.read_register(0x21a, 0, functioncode=3, signed=False) * 10.0 # read Today's Power bought Wh
+	TodayConsumption_Wh = instrument.read_register(0x21b, 0, functioncode=3, signed=False) * 10.0 # read Today's consumption bought Wh
+	TotalLoadConsumptionH = instrument.read_register(0x222, 0, functioncode=3, signed=False) * 0xffff # Total Load Consumption kWh HighByte
+	TotalLoadConsumption = TotalLoadConsumptionH + instrument.read_register(0x223, 0, functioncode=3, signed=False) # Total Load Consumption kWh LowByte
+	InverterInternalTemp = instrument.read_register(0x238, 0, functioncode=3, signed=False) # Inverter Internal Temperature
+	InverterHeatsinkTemp = instrument.read_register(0x239, 0, functioncode=3, signed=False) # Inverter Heatsink Temperature
 	success = True
 
 def valuesToStrings():
-	self.Grid_PwrStr = str(Grid_IO_Pwr)
-	self.House_Consumption_PwrStr = str(House_Consumption_Pwr)
-	self.Internal_IO_PwrStr = str(Internal_IO_Pwr)
-	self.PV_Generation_PwrStr = str(PV_Generation_Pwr)
-	self.EPS_Output_VStr = str(EPS_Output_V)
-	self.EPS_Output_PwrStr = str(EPS_Output_Pwr)
-	self.TodayGenerated_WhStr = str(TodayGeneratedSolar_Wh)
-	self.TodaySold_WhStr = str(TodaySoldSolar_Wh)
-	self.TodayBought_WhStr = str(TodayBoughtGrid_Wh)
-	self.TodayConsumption_WhStr = str(TodayConsumption_Wh)
-	self.Battery_ChargeDischargePwrStr = str(Battery_ChargeDischargePwr)
-	self.Battery_CyclesStr = str(Battery_Cycles)
-	self.Battery_ChrgLevelStr = str(Battery_ChrgLevel)
-	self.InverterInternalTempStr = str(InverterInternalTemp)
-	self.InverterHeatsinkTempStr = str(InverterHeatsinkTemp)
-	self.Inverter_FreqStr = str(float("{:.1f}".format(Inverter_Freq)))
+	Grid_PwrStr = str(readAllData.Grid_IO_Pwr)
+	House_Consumption_PwrStr = str(readAllData.House_Consumption_Pwr)
+	Internal_IO_PwrStr = str(readAllData.Internal_IO_Pwr)
+	PV_Generation_PwrStr = str(readAllData.PV_Generation_Pwr)
+	EPS_Output_VStr = str(readAllData.EPS_Output_V)
+	EPS_Output_PwrStr = str(readAllData.EPS_Output_Pwr)
+	TodayGenerated_WhStr = str(readAllData.TodayGeneratedSolar_Wh)
+	TodaySold_WhStr = str(readAllData.TodaySoldSolar_Wh)
+	TodayBought_WhStr = str(readAllData.TodayBoughtGrid_Wh)
+	TodayConsumption_WhStr = str(readAllData.TodayConsumption_Wh)
+	Battery_ChargeDischargePwrStr = str(readAllData.Battery_ChargeDischargePwr)
+	Battery_CyclesStr = str(readAllData.Battery_Cycles)
+	Battery_ChrgLevelStr = str(readAllData.Battery_ChrgLevel)
+	InverterInternalTempStr = str(readAllData.InverterInternalTemp)
+	InverterHeatsinkTempStr = str(readAllData.InverterHeatsinkTemp)
+	TotalLoadConsumptionStr = str(readAllData.TotalLoadConsumption)
+	Inverter_FreqStr = str(float("{:.1f}".format(readAllData.Inverter_Freq)))
 
 def printStrings():
 		##Debug Print
-	print("Grid Power " + Grid_PwrStr + "W")
-	print("House Consumption " + House_Consumption_PwrStr + "W")
-	print("Solar PV Generation " + PV_Generation_PwrStr + "W")
-	print("Internal I/O Power " + Internal_IO_PwrStr + "W")
-	print("EPS Output Volts " + EPS_Output_VStr + "V")
-	print("EPS Output Power " + EPS_Output_PwrStr + "W")
-	print("Today's Generation " + TodayGenerated_WhStr + "Wh")
-	print("Today's Sold " + TodaySold_WhStr + "Wh")
-	print("Today's Bought " + TodayBought_WhStr + "Wh")
-	print("Today's Consumption " + TodayConsumption_WhStr + "Wh")
-	print("All time Consumption " + str(TotalLoadConsumption) + "kW")
-	print("Battery Charge/Discharge Power " + Battery_ChargeDischargePwrStr + "W")
-	print("Battery Cycles " + Battery_CyclesStr)
-	print("Battery Charge Level " + Battery_ChrgLevelStr + "%")
-	print("Inverter Internal Temp " + InverterInternalTempStr + "C")
-	print("Inverter Heatsink Temp " + InverterHeatsinkTempStr + "C")
-	print("Grid Frequency " + Inverter_FreqStr + "Hz")
+	print("Grid Power " + valuesToStrings.Grid_PwrStr + "W")
+	print("House Consumption " + valuesToStrings.House_Consumption_PwrStr + "W")
+	print("Solar PV Generation " + valuesToStrings.PV_Generation_PwrStr + "W")
+	print("Internal I/O Power " + valuesToStrings.Internal_IO_PwrStr + "W")
+	print("EPS Output Volts " + valuesToStrings.EPS_Output_VStr + "V")
+	print("EPS Output Power " + valuesToStrings.EPS_Output_PwrStr + "W")
+	print("Today's Generation " + valuesToStrings.TodayGenerated_WhStr + "Wh")
+	print("Today's Sold " + valuesToStrings.TodaySold_WhStr + "Wh")
+	print("Today's Bought " + valuesToStrings.TodayBought_WhStr + "Wh")
+	print("Today's Consumption " + valuesToStrings.TodayConsumption_WhStr + "Wh")
+	print("All time Consumption " + valuesToStrings.TotalLoadConsumptionStr + "kW")
+	print("Battery Charge/Discharge Power " + valuesToStrings.Battery_ChargeDischargePwrStr + "W")
+	print("Battery Cycles " + valuesToStrings.Battery_CyclesStr)
+	print("Battery Charge Level " + valuesToStrings.Battery_ChrgLevelStr + "%")
+	print("Inverter Internal Temp " + valuesToStrings.InverterInternalTempStr + "C")
+	print("Inverter Heatsink Temp " + valuesToStrings.InverterHeatsinkTempStr + "C")
+	print("Grid Frequency " + valuesToStrings.Inverter_FreqStr + "Hz")
 
 def mqttPublish():
 	topic = "sensors/sofar/" +  "grid_power"
-	client.publish(topic,Grid_PwrStr,qos=0,retain=False)
+	client.publish(topic,valuesToStrings.Grid_PwrStr,qos=0,retain=False)
 	topic = "sensors/sofar/" +  "house_consumption"
-	client.publish(topic,House_Consumption_PwrStr,qos=0,retain=False)
+	client.publish(topic,valuesToStrings.House_Consumption_PwrStr,qos=0,retain=False)
 
 
 serErrorCount = 0
@@ -209,7 +132,7 @@ while serErrorCount != 11:
 	
 
 	try:
-		readData()
+		readData(instrument)
 	except:
 		print("Unable to read Data From Inverter.")
 		#ser.close()
